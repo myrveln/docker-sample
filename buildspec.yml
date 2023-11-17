@@ -2,6 +2,7 @@
 version: 0.2
 
 env:
+  git-credential-helper: yes
   variables:
     APPLICATION: "hello"
     IMAGE_TAG: "latest"
@@ -19,6 +20,7 @@ phases:
       - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
       - ls -la
       - ls -la .git/
+      - git log | head -100
       - exit 0
   build:
     commands:
