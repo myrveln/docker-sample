@@ -1,4 +1,4 @@
-ARG BASE_IMAGE="alpine:3.18"
+ARG BASE_IMAGE="public.ecr.aws/docker/library/alpine:3.18"
 
 FROM ${BASE_IMAGE}
 
