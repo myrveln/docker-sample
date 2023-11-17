@@ -19,8 +19,7 @@ phases:
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
       - ls -la
-      - ls -la .git/
-      - git log | head -100
+      - printenv
       - exit 0
   build:
     commands:
