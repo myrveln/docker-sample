@@ -1,5 +1,5 @@
 {
-    "executionRoleArn": "arn:aws:iam::{{ AWS_ACCOUNT_ID }}:role/hello-task-execution-role",
+    "executionRoleArn": "arn:aws:iam::{{ AWS_ACCOUNT_ID }}:role/docker-sample-task-execution-role",
     "containerDefinitions": [
         {
             "name": "hello",
