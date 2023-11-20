@@ -1,9 +1,9 @@
 # Buildspec to pull the latest version of the Docker image from docker hub and deploy it to the ECS cluster
 version: 0.2
 
-env:
-  variables:
-    APPLICATION: "docker-sample"
+# env:
+#   variables:
+#     APPLICATION: "docker-sample"
 phases:
   # install:
   #   runtime-versions:
@@ -17,7 +17,7 @@ phases:
       - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
   build:
     commands:
-      - export REPOSITORY_URI=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${APPLICATION}
+      - export REPOSITORY_URI=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${APPLICATION_NAME}
       - export IMAGE_TAG="$(echo ${CODEBUILD_RESOLVED_SOURCE_VERSION} | head -c7)"
       - docker --version
       - docker build -t ${REPOSITORY_URI}:${IMAGE_TAG} .
@@ -27,7 +27,7 @@ phases:
       - printf '{"ImageURI":"%s"}' ${REPOSITORY_URI}:${IMAGE_TAG}  > imageDetail.json
       - sed -i 's/{{ AWS_ACCOUNT_ID }}/'${AWS_ACCOUNT_ID}'/g' taskdef.json
       - sed -i 's#{{ IMAGE_NAME }}#'${REPOSITORY_URI}'\:'${IMAGE_TAG}'#g' taskdef.json
-      - sed -i 's#{{ APPLICATION }}#'${APPLICATION}'#g' taskdef.json
+      - sed -i 's#{{ APPLICATION_NAME }}#'${APPLICATION_NAME}'#g' taskdef.json
       - cat taskdef.json
 artifacts:
   files:
