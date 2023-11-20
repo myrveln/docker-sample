@@ -8,7 +8,6 @@ ENV NGINX_VERSION="1.24.0-r7" \
 RUN apk update && apk upgrade \
  && apk add nginx=${NGINX_VERSION} \
  && apk add php81=${PHP_VERSION} \
-			php81-fpm \
 			php81-bz2 \
 			php81-calendar \
 			php81-ctype \
@@ -16,6 +15,7 @@ RUN apk update && apk upgrade \
 			php81-dom \
 			php81-exif \
 			php81-fileinfo \
+			php81-fpm \
 			php81-gettext \
 			php81-iconv \
 			php81-mbstring \
