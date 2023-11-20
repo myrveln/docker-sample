@@ -3,7 +3,7 @@ version: 0.2
 
 env:
   variables:
-    APPLICATION: "soci-demo-soci-enabled"
+    APPLICATION: "docker-sample"
 phases:
   # install:
   #   runtime-versions:
@@ -27,6 +27,7 @@ phases:
       - printf '{"ImageURI":"%s"}' ${REPOSITORY_URI}:${IMAGE_TAG}  > imageDetail.json
       - sed -i 's/{{ AWS_ACCOUNT_ID }}/'${AWS_ACCOUNT_ID}'/g' taskdef.json
       - sed -i 's#{{ IMAGE_NAME }}#'${REPOSITORY_URI}'\:'${IMAGE_TAG}'#g' taskdef.json
+      - sed -i 's#{{ APPLICATION }}#'${APPLICATION}'#g' taskdef.json
       - cat taskdef.json
 artifacts:
   files:
