@@ -27,7 +27,7 @@ phases:
                   ContainerName: \"${APPLICATION_NAME}\"
                   ContainerPort: 80
         " > appspec.yml
-        - cat appspec.yml
+      - cat appspec.yml
 artifacts:
   files:
     - taskdef.json
