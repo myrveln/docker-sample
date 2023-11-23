@@ -17,17 +17,18 @@ phases:
       - sed -i 's#{{ AWS_REGION }}#'${AWS_REGION}'#g' taskdef.json
       - cat taskdef.json
       - >
-        echo '
+        echo "
           version: 0.0
           Resources:
             - TargetService:
                 Type: AWS::ECS::Service
                 Properties:
-                  TaskDefinition: 
+                  TaskDefinition:
                   LoadBalancerInfo:
-                    ContainerName: "${APPLICATION_NAME}"
+                    ContainerName: \"${APPLICATION_NAME}\"
                     ContainerPort: 80
-        ' > appspec.yml
+        " > appspec.yml
+        - cat appspec.yml
 artifacts:
   files:
     - taskdef.json
