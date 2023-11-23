@@ -12,10 +12,11 @@ phases:
   post_build:
     commands:
       - docker push ${REPOSITORY_URI}:${IMAGE_TAG}
-      - printf '{"ImageURI":"%s"}' ${REPOSITORY_URI}:${IMAGE_TAG}  > imageDetail.json
+      - printf '{"ImageURI":"%s"}' ${REPOSITORY_URI}:${IMAGE_TAG} > imageDetail.json
       - sed -i 's/{{ AWS_ACCOUNT_ID }}/'${AWS_ACCOUNT_ID}'/g' taskdef.json
       - sed -i 's#{{ IMAGE_NAME }}#'${REPOSITORY_URI}'\:'${IMAGE_TAG}'#g' taskdef.json
       - sed -i 's#{{ APPLICATION_NAME }}#'${APPLICATION_NAME}'#g' taskdef.json
+      - sed -i 's#{{ AWS_REGION }}#'${AWS_REGION}'#g' taskdef.json
       - cat taskdef.json
 artifacts:
   files:
