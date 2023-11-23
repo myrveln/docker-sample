@@ -17,7 +17,7 @@
                 "options": { 
                    "awslogs-group" : "/ecs/{{ APPLICATION_NAME }}",
                    "awslogs-region": "{{ AWS_REGION }}",
-                   "awslogs-stream-prefix": "ecs"
+                   "awslogs-stream-prefix": "{{ APPLICATION_NAME }}"
                 }
              }
         }
