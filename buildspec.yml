@@ -2,21 +2,32 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
-  build:
-    commands:
       - export REPOSITORY_URI=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${APPLICATION_NAME}
       - export IMAGE_TAG="$(echo ${CODEBUILD_RESOLVED_SOURCE_VERSION} | head -c7)"
+  build:
+    commands:
       - docker build -t ${REPOSITORY_URI}:${IMAGE_TAG} .
   post_build:
     commands:
+      - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
       - docker push ${REPOSITORY_URI}:${IMAGE_TAG}
-      - "printf 'version: 0.0\nResources:\n  - TargetService:\n      Type: AWS::ECS::Service\n      Properties:\n        TaskDefinition: <TASK_DEFINITION>\n        LoadBalancerInfo:\n          ContainerName: \"%s\"\n          ContainerPort: 80' ${APPLICATION_NAME}"
       - sed -i 's/{{ AWS_ACCOUNT_ID }}/'${AWS_ACCOUNT_ID}'/g' taskdef.json
       - sed -i 's#{{ IMAGE_NAME }}#'${REPOSITORY_URI}'\:'${IMAGE_TAG}'#g' taskdef.json
       - sed -i 's#{{ APPLICATION_NAME }}#'${APPLICATION_NAME}'#g' taskdef.json
       - sed -i 's#{{ AWS_REGION }}#'${AWS_REGION}'#g' taskdef.json
       - cat taskdef.json
+      - >
+        echo '
+          version: 0.0
+          Resources:
+            - TargetService:
+                Type: AWS::ECS::Service
+                Properties:
+                  TaskDefinition: 
+                  LoadBalancerInfo:
+                    ContainerName: "${APPLICATION_NAME}"
+                    ContainerPort: 80
+        ' > appspec.yml
 artifacts:
   files:
     - taskdef.json
