@@ -18,14 +18,14 @@ phases:
       - cat taskdef.json
       - >
         echo 'version: 0.0
-          Resources:
-            - TargetService:
-                Type: AWS::ECS::Service
-                Properties:
-                  TaskDefinition: 
-                  LoadBalancerInfo:
-                    ContainerName: "'"$APPLICATION_NAME"'"
-                    ContainerPort: 80
+         Resources:
+           - TargetService:
+               Type: AWS::ECS::Service
+               Properties:
+                 TaskDefinition: 
+                 LoadBalancerInfo:
+                   ContainerName: "'"$APPLICATION_NAME"'"
+                   ContainerPort: 80
         ' > appspec.yml
       - cat appspec.yml
 artifacts:
