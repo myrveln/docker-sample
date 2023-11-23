@@ -11,7 +11,7 @@ phases:
   post_build:
     commands:
       - docker push ${REPOSITORY_URI}:${IMAGE_TAG}
-      - "printf 'version: 0.0\nResources:\n  - TargetService:\n      Type: AWS::ECS::Service\n      Properties:\n        TaskDefinition: <TASK_DEFINITION>\n        LoadBalancerInfo:\n          ContainerName: \"%s\"\n          ContainerPort: 80' "${APPLICATION_NAME}""
+      - "printf 'version: 0.0\nResources:\n  - TargetService:\n      Type: AWS::ECS::Service\n      Properties:\n        TaskDefinition: <TASK_DEFINITION>\n        LoadBalancerInfo:\n          ContainerName: \"%s\"\n          ContainerPort: 80' ${APPLICATION_NAME}"
       - sed -i 's/{{ AWS_ACCOUNT_ID }}/'${AWS_ACCOUNT_ID}'/g' taskdef.json
       - sed -i 's#{{ IMAGE_NAME }}#'${REPOSITORY_URI}'\:'${IMAGE_TAG}'#g' taskdef.json
       - sed -i 's#{{ APPLICATION_NAME }}#'${APPLICATION_NAME}'#g' taskdef.json
