@@ -15,21 +15,7 @@ phases:
       - sed -i 's#{{ IMAGE_NAME }}#'${REPOSITORY_URI}'\:'${IMAGE_TAG}'#g' taskdef.json
       - sed -i 's#{{ APPLICATION_NAME }}#'${APPLICATION_NAME}'#g' taskdef.json
       - sed -i 's#{{ AWS_REGION }}#'${AWS_REGION}'#g' taskdef.json
-      - cat taskdef.json
-      - >
-        cat << END
-        version: 0.0
-        Resources:
-          - TargetService:
-              Type: AWS::ECS::Service
-              Properties:
-                TaskDefinition: 
-                LoadBalancerInfo:
-                  ContainerName: "${APPLICATION_NAME}"
-                  ContainerPort: 80
-        END
-        > appspec.yml
-      - cat appspec.yml
+      - sed -i 's#{{ APPLICATION_NAME }}#'${APPLICATION_NAME}'#g' appspec.yml
 artifacts:
   files:
     - taskdef.json
