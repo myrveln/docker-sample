@@ -2,12 +2,9 @@ ARG BASE_IMAGE="public.ecr.aws/docker/library/alpine:3.18"
 
 FROM ${BASE_IMAGE}
 
-ENV NGINX_VERSION="1.24.0-r7" \
-    PHP_VERSION="8.1.25-r0"
-
 RUN apk update && apk upgrade \
- && apk add nginx=${NGINX_VERSION} \
- && apk add php81=${PHP_VERSION} \
+ && apk add nginx \
+			php81 \
 			php81-bz2 \
 			php81-calendar \
 			php81-ctype \
@@ -42,7 +39,8 @@ RUN apk update && apk upgrade \
 			php81-xmlwriter \
 			php81-xsl \
 			php81-opcache \
- && apk add python3 py3-pip \
+			python3 \
+			py3-pip \
  && pip3 install --upgrade pip \
  && pip3 install supervisor
 
