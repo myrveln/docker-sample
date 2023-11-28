@@ -19,9 +19,9 @@ phases:
       - aws ecs describe-task-definition --output json --task-definition ${TASK_DEFINITION_ARN} --query taskDefinition > template.json
       - jq 'del(.taskDefinitionArn,.revision,.requiresAttributes,.registeredAt,.registeredBy)' template.json > template_clean.json
       - jq -r ".containerDefinitions[].image = \"${REPOSITORY_URI}:${IMAGE_TAG}\"" template_clean.json > taskdef.json
-      - jq -n --arg appname "${APPLICATION_NAME}" --arg imageuri "${REPOSITORY_URI}:${IMAGE_TAG}" '[{"name":$appname,"imageUri":$imageuri}]' > imageDetail.json
+      #- jq -n --arg appname "${APPLICATION_NAME}" --arg imageuri "${REPOSITORY_URI}:${IMAGE_TAG}" '[{"name":$appname,"imageUri":$imageuri}]' > imageDetail.json
 artifacts:
   files:
-    - imageDetail.json
+    #- imageDetail.json
     - taskdef.json
     - appspec.yml
