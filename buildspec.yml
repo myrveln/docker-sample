@@ -20,6 +20,9 @@ phases:
       - jq 'del(.taskDefinitionArn,.revision,.requiresAttributes,.registeredAt,.registeredBy)' template.json > template_clean.json
       - jq -r '.containerDefinitions[].image = "<IMAGE1_NAME>"' template_clean.json > taskdef.json
       - jq -n --arg appname "${APPLICATION_NAME}" --arg imageuri "${REPOSITORY_URI}:${IMAGE_TAG}" '[{"name":$appname,"imageUri":$imageuri}]' > imagedef.json
+      - cat imagedef.json
+      - cat taskdef.json
+      - cat appspec.yml
 artifacts:
   files:
     - imagedef.json
