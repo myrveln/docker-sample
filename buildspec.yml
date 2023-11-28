@@ -18,7 +18,7 @@ phases:
       - sed -i 's#{{ APPLICATION_NAME }}#'${APPLICATION_NAME}'#g' appspec.yml
       - aws ecs describe-task-definition --output json --task-definition ${TASK_DEFINITION_ARN} --query taskDefinition > template.json
       - jq 'del(.taskDefinitionArn,.revision,.requiresAttributes,.registeredAt,.registeredBy)' template.json > template_clean.json
-      - jq -r '.containerDefinitions[].image = "<IMAGE1_NAME>"' template_clean.json > taskdef.json
+      - jq -r ".containerDefinitions[].image = \"${REPOSITORY_URI}:${IMAGE_TAG}\"" template_clean.json > taskdef.json
       - jq -n --arg appname "${APPLICATION_NAME}" --arg imageuri "${REPOSITORY_URI}:${IMAGE_TAG}" '[{"name":$appname,"imageUri":$imageuri}]' > imageDetail.json
 artifacts:
   files:
