@@ -4,24 +4,20 @@ phases:
     commands:
       - export REPOSITORY_URI=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${APPLICATION_NAME}
       - export IMAGE_TAG="$(echo ${CODEBUILD_RESOLVED_SOURCE_VERSION} | head -c7)"
+      - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
   build:
     commands:
       - docker build -t ${REPOSITORY_URI}:${IMAGE_TAG} .
   post_build:
     commands:
-      - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
       - docker push ${REPOSITORY_URI}:${IMAGE_TAG}
-      # - sed -i 's/{{ AWS_ACCOUNT_ID }}/'${AWS_ACCOUNT_ID}'/g' taskdef.json
-      # - sed -i 's#{{ IMAGE_NAME }}#'${REPOSITORY_URI}'\:'${IMAGE_TAG}'#g' taskdef.json
-      # - sed -i 's#{{ APPLICATION_NAME }}#'${APPLICATION_NAME}'#g' taskdef.json
-      # - sed -i 's#{{ AWS_REGION }}#'${AWS_REGION}'#g' taskdef.json
       - sed -i 's#{{ APPLICATION_NAME }}#'${APPLICATION_NAME}'#g' appspec.yml
+      # Always download the original task definition created by Terraform.
+      # This ensures that if I update the task definition through Terraform, it will be used on next CodeDeploy.
       - aws ecs describe-task-definition --output json --task-definition ${TASK_DEFINITION_ARN} --query taskDefinition > template.json
-      #- jq 'del(.taskDefinitionArn,.revision,.requiresAttributes,.registeredAt,.registeredBy)' template.json > template_clean.json
+      # Replace the image URI in the downloaded task definition with the URI of the pushed image
       - jq -r ".containerDefinitions[].image = \"${REPOSITORY_URI}:${IMAGE_TAG}\"" template.json > taskdef.json
-      #- jq -n --arg appname "${APPLICATION_NAME}" --arg imageuri "${REPOSITORY_URI}:${IMAGE_TAG}" '[{"name":$appname,"imageUri":$imageuri}]' > imageDetail.json
 artifacts:
   files:
-    #- imageDetail.json
     - taskdef.json
     - appspec.yml
