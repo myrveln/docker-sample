@@ -11,14 +11,14 @@ phases:
     commands:
       - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
       - docker push ${REPOSITORY_URI}:${IMAGE_TAG}
-      - sed -i 's/{{ AWS_ACCOUNT_ID }}/'${AWS_ACCOUNT_ID}'/g' taskdef.json
-      - sed -i 's#{{ IMAGE_NAME }}#'${REPOSITORY_URI}'\:'${IMAGE_TAG}'#g' taskdef.json
-      - sed -i 's#{{ APPLICATION_NAME }}#'${APPLICATION_NAME}'#g' taskdef.json
-      - sed -i 's#{{ AWS_REGION }}#'${AWS_REGION}'#g' taskdef.json
-      - sed -i 's#{{ APPLICATION_NAME }}#'${APPLICATION_NAME}'#g' appspec.yml
-      - jq --version
-      # - printf '[{"name":"golang-container","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      # - sed -i 's/{{ AWS_ACCOUNT_ID }}/'${AWS_ACCOUNT_ID}'/g' taskdef.json
+      # - sed -i 's#{{ IMAGE_NAME }}#'${REPOSITORY_URI}'\:'${IMAGE_TAG}'#g' taskdef.json
+      # - sed -i 's#{{ APPLICATION_NAME }}#'${APPLICATION_NAME}'#g' taskdef.json
+      # - sed -i 's#{{ AWS_REGION }}#'${AWS_REGION}'#g' taskdef.json
+      # - sed -i 's#{{ APPLICATION_NAME }}#'${APPLICATION_NAME}'#g' appspec.yml
+      - jq -n --arg appname "${APPLICATION_NAME}" --arg imageuri "${REPOSITORY_URI}:${IMAGE_TAG}" '[{"name":$appname,"imageUri":$imageuri}]' > imagedef.json
 artifacts:
   files:
-    - taskdef.json
-    - appspec.yml
+    - imagedef.json
+    # - taskdef.json
+    # - appspec.yml
