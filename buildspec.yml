@@ -16,6 +16,8 @@ phases:
       - sed -i 's#{{ APPLICATION_NAME }}#'${APPLICATION_NAME}'#g' taskdef.json
       - sed -i 's#{{ AWS_REGION }}#'${AWS_REGION}'#g' taskdef.json
       - sed -i 's#{{ APPLICATION_NAME }}#'${APPLICATION_NAME}'#g' appspec.yml
+      - jq --version
+      # - printf '[{"name":"golang-container","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
 artifacts:
   files:
     - taskdef.json
