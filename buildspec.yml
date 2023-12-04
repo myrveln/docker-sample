@@ -16,7 +16,8 @@ phases:
       # This ensures that if I update the task definition through Terraform, it will be used on next CodeDeploy.
       #- aws ecs describe-task-definition --output json --task-definition ${TASK_DEFINITION_ARN} --query taskDefinition > template.json
       # Replace the image URI in the downloaded task definition with the URI of the pushed image
-      #- jq -r ".containerDefinitions[].image = \"${REPOSITORY_URI}:${IMAGE_TAG}\"" template.json > taskdef.json
+      - curl https://raw.githubusercontent.com/markotom/aws-ecs-example/master/task-definition.json | jq -r '.containerDefinitions[].portMappings[].containerPort = '80' | .containerDefinitions[].portMappings[].hostPort = '80'' > template.json
+      - jq -r ".containerDefinitions[].image = \"public.ecr.aws/nginx/nginx:alpine-slim\" | .family = \"${APPLICATION_NAME}\" | .containerDefinitions[].name = \"${APPLICATION_NAME}\"" template.json > taskdef.json
 artifacts:
   files:
     - taskdef.json
