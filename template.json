@@ -1,5 +1,6 @@
 {
     "family": "kimtestar",
+    "executionRoleArn": "arn:aws:iam::002293541488:role/kimtestar-task-execution-role",
     "networkMode": "awsvpc",
     "containerDefinitions": [
         {
