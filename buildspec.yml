@@ -2,8 +2,6 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - aws ecs describe-task-definition --output json --task-definition "kimtestar" --query taskDefinition
-      - aws ecs describe-task-definition --output json --task-definition "${TASK_DEFINITION_ARN}" --query taskDefinition
       - export REPOSITORY_URI=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${APPLICATION_NAME}
       - export IMAGE_TAG="$(echo ${CODEBUILD_RESOLVED_SOURCE_VERSION} | head -c7)"
       - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
@@ -14,9 +12,20 @@ phases:
     commands:
       - docker push ${REPOSITORY_URI}:${IMAGE_TAG}
       - sed -i 's#{{ APPLICATION_NAME }}#'${APPLICATION_NAME}'#g' appspec.yml
+
+      # Assume external role, that give permission to describe the task definition
+      - aws sts get-caller-identity
+      - ASSUME_ROLE_ARN="arn:aws:iam::${EXTERNAL_ACCOUNT_ID}:role/${APPLICATION_NAME}-codebuild-ca-role"
+      - EXTERNAL_ROLE=$(aws sts assume-role --role-arn ${ASSUME_ROLE_ARN} --role-session-name external)
+      - export AWS_ACCESS_KEY_ID=$(echo "${EXTERNAL_ROLE}" | jq -r '.Credentials.AccessKeyId')
+      - export AWS_SECRET_ACCESS_KEY=$(echo "${EXTERNAL_ROLE}" | jq -r '.Credentials.SecretAccessKey')
+      - export AWS_SESSION_TOKEN=$(echo "${EXTERNAL_ROLE}" | jq -r '.Credentials.SessionToken')
+      - aws sts get-caller-identity
+
       # Always download the original task definition created by Terraform.
       # This ensures that if I update the task definition through Terraform, it will be used on next CodeDeploy.
       - aws ecs describe-task-definition --output json --task-definition ${TASK_DEFINITION_ARN} --query taskDefinition > template.json
+
       # Replace the image URI in the downloaded task definition with the URI of the pushed image
       - jq -r ".containerDefinitions[].image = \"${REPOSITORY_URI}:${IMAGE_TAG}\"" template.json > taskdef.json
 artifacts:
